@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class ParticleManager
+public static class ParticleManager
 {
-  private List<ParticleSystem> _particles = new List<ParticleSystem>();
-  public ParticleManager() {
-    _particles = Resources.LoadAll<ParticleSystem>("/Particles").ToList();
+  private static List<GameObject> _particles = new List<GameObject>();
+  static ParticleManager() {
+    _particles = Resources.LoadAll<GameObject>("Particles").ToList();
+    Debug.Log("Particles: " + _particles.Count());
   }
 
-  private ParticleSystem GetParticle(string particle) {
-    return _particles.FirstOrDefault(x => x.name == particle) ?? _particles[0];
+  public static GameObject GetParticle(string particle) {
+    return _particles.FirstOrDefault(x => x.name == particle);
   }
 
 }

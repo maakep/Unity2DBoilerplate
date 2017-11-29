@@ -9,28 +9,26 @@ using UnityEngine.UI;
 /// set Left, Top, Right and Bottom to 0; filling the screen with the image.
 /// </summary>
 public class FadeManager {
-	private Image _fadeImage;
-	private GameManager gameManager;
-	private Color _transparent = new Color(0, 0, 0, 0);
-	public FadeManager (GameManager gm) {
-		gameManager = gm;
+	private static Image _fadeImage;
+	private static Color _transparent = new Color(0, 0, 0, 0);
+	static FadeManager () {
 		_fadeImage = GameObject.Find("Fader").GetComponent<Image>();
 
 		#if UNITY_EDITOR
 		if (_fadeImage == null) {
-			Debug.LogError(gm.name + " couldn't find Image component for the fader object");
+			Debug.LogError("couldn't find Image component for the fader object");
 		}
 		#endif
 	}
 
 	// The "if no color is set, default to black"-overload
-	public void FadeOut(Action doneCallback, float fadeSpeed = 1) {
-		FadeOut(doneCallback, Color.black, fadeSpeed);
+	public static void FadeOut(MonoBehaviour anyScript, Action doneCallback, float fadeSpeed = 1) {
+		FadeOut(anyScript, doneCallback, Color.black, fadeSpeed);
 	}
-	public void FadeOut(Action doneCallback, Color fadeOutColor, float fadeSpeed = 1) {
-		gameManager.StartCoroutine(_FadeOut(doneCallback, fadeOutColor, fadeSpeed));
+	public static void FadeOut(MonoBehaviour anyScript, Action doneCallback, Color fadeOutColor, float fadeSpeed = 1) {
+		anyScript.StartCoroutine(_FadeOut(doneCallback, fadeOutColor, fadeSpeed));
 	}
-	private IEnumerator _FadeOut(Action doneCallback, Color fadeOutColor, float fadeSpeed) {
+	private static IEnumerator _FadeOut(Action doneCallback, Color fadeOutColor, float fadeSpeed) {
 		var ticks = 0f;
 		do {
 			_fadeImage.color = Color.Lerp(_transparent, fadeOutColor, ticks);
@@ -41,13 +39,13 @@ public class FadeManager {
 		doneCallback();
 	}
 
-	public void FadeIn(Action doneCallback, float fadeSpeed = 1) {
-		FadeIn(doneCallback, Color.black, fadeSpeed);
+	public static void FadeIn(MonoBehaviour anyScript, Action doneCallback, float fadeSpeed = 1) {
+		FadeIn(anyScript, doneCallback, Color.black, fadeSpeed);
 	}
-	public void FadeIn(Action doneCallback, Color fadeOutColor, float fadeSpeed = 1) {
-		gameManager.StartCoroutine(_FadeIn(doneCallback, fadeOutColor, fadeSpeed));
+	public static void FadeIn(MonoBehaviour anyScript, Action doneCallback, Color fadeOutColor, float fadeSpeed = 1) {
+		anyScript.StartCoroutine(_FadeIn(doneCallback, fadeOutColor, fadeSpeed));
 	}
-	private IEnumerator _FadeIn(Action doneCallback, Color fadeOutColor, float fadeSpeed) {
+	private static IEnumerator _FadeIn(Action doneCallback, Color fadeOutColor, float fadeSpeed) {
 		
 		var ticks = 0f;
 		do {
@@ -56,11 +54,5 @@ public class FadeManager {
 			ticks += Time.deltaTime * fadeSpeed;
 		} while (_fadeImage.color != _transparent);
 		doneCallback();
-	}
-
-	public bool Activate() {
-		Debug.Log("Activate!");
-		FadeOut(()=>{});
-		return true;
 	}
 }

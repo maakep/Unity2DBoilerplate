@@ -37,7 +37,6 @@ public class TopDownAim : AbstractPlayerAim {
 
     void FixedUpdate()
     {
-		Debug.Log(m_parent.transform.position.y);
 		m_degree = Mathf.Atan2(m_mouse.y - m_parent.transform.position.y, m_mouse.x - m_parent.transform.position.x) * Mathf.Rad2Deg;
         MoveAim();
     }

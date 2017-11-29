@@ -9,17 +9,15 @@ using System.Linq;
 /// To play a random footstep sound, put all footstep sounds in Resources/Footsteps/ and call PlayRandom("Footsteps", this.transform.position);
 /// To play one specific clip, call Play("ClipName")
 ///</summary>
-public class SoundManager
+public static class SoundManager
 {
-  private AudioClip[] _clips;
-  private GameManager _gameManager;
-  public AudioClip IncorrectClipName;
-  public SoundManager(GameManager gm) {
-    _gameManager = gm;
+  static private AudioClip[] _clips;
+  static public AudioClip IncorrectClipName;
+  static SoundManager() {
     _clips = Resources.LoadAll<AudioClip>("Audio");
   }
 
-  private AudioClip GetClip(string clip) {
+  private static AudioClip GetClip(string clip) {
     foreach (var c in _clips) {
       if (c.name == clip) {
         return c;
@@ -29,8 +27,8 @@ public class SoundManager
   }
 
 
-  public void Play(string clip, Vector3 position){_gameManager.StartCoroutine(_Play(clip, position));}
-  private IEnumerator _Play(string clip, Vector3 position)
+  public static void Play(MonoBehaviour anyScript, string clip, Vector3 position){anyScript.StartCoroutine(_Play(clip, position));}
+  private static IEnumerator _Play(string clip, Vector3 position)
   {
     var newObj = new GameObject("Soundplayer_" + clip, typeof(AudioSource));
     newObj.transform.position = position;
@@ -44,8 +42,8 @@ public class SoundManager
 ///<summary>
 /// Plays a sound based on a folder in Resources. They load once, and is then cached to be reused. 
 ///</summary>
-  public void PlayRandom(string folder, Vector3 position){_gameManager.StartCoroutine(_PlayRandom(folder, position));}
-  private IEnumerator _PlayRandom(string folder, Vector3 position)
+  public static void PlayRandom(MonoBehaviour anyScript, string folder, Vector3 position){anyScript.StartCoroutine(_PlayRandom(folder, position));}
+  private static IEnumerator _PlayRandom(string folder, Vector3 position)
   {
     var sounds = TryGetFromRandomCache(folder);
     var newObj = new GameObject("SoundplayerRandom_" + folder, typeof(AudioSource));
@@ -67,8 +65,8 @@ public class SoundManager
     public string folderName;
     public AudioClip[] clips;
   }
-  private List<RandomCache> _randomCache = new List<RandomCache>();
-  private AudioClip[] TryGetFromRandomCache(string folder) {
+  private static List<RandomCache> _randomCache = new List<RandomCache>();
+  private static AudioClip[] TryGetFromRandomCache(string folder) {
     RandomCache soundList = _randomCache.FirstOrDefault(x => x.folderName == folder);
     AudioClip[] sounds = null;
 
