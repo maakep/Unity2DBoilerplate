@@ -5,65 +5,103 @@ using UnityEngine;
 public class TextManager : MonoBehaviour
 {
 
-    private static GameObject canvas;
-    private static APopupText m_dmg_text;
+    public static Color32 DAMAGE_COLOR = new Color32(240, 0, 0, 255);
+    public static Color32 HEAL_COLOR = new Color32(0, 240, 0, 255);
+    public static Color32 CONV_COLOR = new Color32(0, 0, 0, 255);
+    public static Color32 YELL_COLOR = new Color32(100, 100, 100, 255);
+
+
+    private static GameObject m_screen_canvas;
+    private static GameObject m_world_canvas;
+
+    private static APopupText m_damage_text;
     private static APopupText m_conversation_text;
-    private static APopupText m_cry_text;
+    private static APopupText m_yell_text;
     //private static IPopupText m_conversation_text;
     //private list<> m_ongoing_conversation;
 
 
-/// <summary>
-/// IMPORTANT: There must be a canvas with the tag Canvas on the scene. 
-/// Initialize, which will be called from the GameManager, load the popuptext resources.
-/// To create a text, call TextManager.Create<typeoftext>Text(string Text, Transform location, float? range).
-/// location is the position of the created text, range is a random range x interal which the text will be created around
-///</summary>
-    public static void Initialize()
+    /// <summary> 
+    /// To create a text, call TextManager.Create<typeoftext>Text(string Text, Transform location, float? range).
+    /// location is the position of the created text, range is a random range x interal which the text will be created around.
+    /// To change text, call TextManager.SetText(string text);
+    ///</summary>
+    static TextManager()
     {
-				
-			canvas = GameObject.FindWithTag("Canvas"); // TODO change to a better solution?
-			if (canvas == null) {
-				Debug.LogError("Could not find a canvas with the tag Canvas in the scene");
-			}
 
-			m_dmg_text = Resources.Load<APopupText>("Prefabs/Text/DmgTextParent");
-			m_conversation_text = Resources.Load<APopupText>("Prefabs/Text/DmgTextParent");
-			m_cry_text = Resources.Load<APopupText>("Prefabs/Text/DmgTextParent");
+        GameObject screen_canvas = Resources.Load<GameObject>("Prefabs/Text/ScreenCanvas");
+        if (screen_canvas == null)
+        {
+            Debug.LogError("Could not load canvas resources");
+        }
+        m_screen_canvas = Instantiate(screen_canvas);
+
+        m_world_canvas = Resources.Load<GameObject>("Prefabs/Text/WorldCanvas");
+        if (m_world_canvas == null)
+        {
+            Debug.LogError("Could not load canvas resources");
+        }
+
+        m_damage_text = Resources.Load<APopupText>("Prefabs/Text/DamageTextParent");
+        if (m_damage_text == null)
+        {
+            Debug.LogError("Could not load damage text prefab");
+        }
+
+        m_conversation_text = Resources.Load<APopupText>("Prefabs/Text/ConversationTextParent");
+        if (m_conversation_text == null)
+        {
+            Debug.LogError("Could not load conversation text prefab");
+        }
+        //m_yell_text = Resources.Load<APopupText>("Prefabs/Text/YellTextParent");
     }
 
-    public static void CreateDmgText(string text, Transform location, float? range)
+    public static void CreateDamageText(string text, Transform location, float? range = null, Color32? color = null)
     {
         float random_range = range != null ? Random.Range(-(float)range, (float)range) : 0;
-
-        CreatePopupText(text, new Vector2(location.position.x + random_range, location.position.y), m_dmg_text);
+        Color32 text_color = color ?? DAMAGE_COLOR;
+        CreatePopupText(text, location, m_damage_text, text_color, pad_x: random_range);
     }
 
-    //TODO add different conversation text.
-    public static void CreateConversationText(string text, Transform location)
+    public static void CreateHealText(string text, Transform location, float? range = null, Color32? color = null)
     {
-        CreatePopupText(text, location.position, m_conversation_text);
+        CreateDamageText(text, location, range, color = HEAL_COLOR);
     }
 
-		//TODO, make it better and more flexible.
-    /*
-	public static void DestroyConversationText(string text, Transform location)
-    {
-		DestroyPopupText(text, location, m_dmg_text); // needed since conversation text doesn't destroy on set time.
-	}*/
 
-    public static void CreateCryText(string text, Transform location)
+    public static APopupText CreateConversationText(string text, Transform location, Color32? color = null)
     {
-        CreatePopupText(text, location.position, m_cry_text);
+        Color32 text_color = color ?? CONV_COLOR;
+        return CreatePopupText(text, location, m_conversation_text, text_color, attach_to_object: true);
     }
 
-    private static APopupText CreatePopupText(string text, Vector2 position, APopupText popuptext)
+
+    public static APopupText CreateYellText(string text, Transform location, Color32? color = null) // TODO, should be fairly easy to implement. Same way as createDamageText but with a longer animation, and with attach_to_object=true
+    {
+        Color32 text_color = color ?? YELL_COLOR;
+        return CreatePopupText(text, location, m_yell_text, text_color); // Yell is not implemented yet, but won't take more than an hour to implement.
+    }
+
+    private static APopupText CreatePopupText(string text, Transform transform, APopupText popuptext, Color32 color, bool attach_to_object = false, float pad_x = 0, float pad_y = 0)
     {
         APopupText instance = Instantiate(popuptext);
-        Vector2 screen = Camera.main.WorldToScreenPoint(position);
-        instance.transform.SetParent(canvas.transform, false);
-        instance.transform.position = screen;
+
+        if (attach_to_object)
+        {
+            GameObject canvas = Instantiate(m_world_canvas);
+            canvas.transform.SetParent(transform, false);
+            instance.transform.SetParent(canvas.transform, false);
+        }
+        else
+        {
+            Vector2 screen;
+            screen = Camera.main.WorldToScreenPoint(new Vector2(transform.position.x + pad_x, transform.position.y + pad_y));
+            instance.transform.SetParent(m_screen_canvas.transform, false);
+            instance.transform.position = screen;
+        }
+
         instance.SetText(text);
+        instance.SetColor(color);
         return instance;
     }
 }
