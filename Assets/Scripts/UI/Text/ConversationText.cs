@@ -17,8 +17,6 @@ public class ConversationText : APopupText {
 
 	public override void DestroyText()
 	{
-		//PLAY DESTROY TIMER, PLAY ANIMATION
-		Debug.Log(this.transform.parent.gameObject);
 		Destroy(this.transform.parent.gameObject);
 	}
 }

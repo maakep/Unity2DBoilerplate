@@ -11,10 +11,6 @@ public class DamageText : APopupText {
 		Destroy(this.gameObject, clip[0].clip.length);
 	}
 
-	public override void DestroyText(){
-		Destroy(this.gameObject);
-	}
-
 	public override void SetColor(Color32 color){
 		// base.SetColor(new Color32((byte)(color.r/2), (byte)(color.g/2), (byte)(color.b/2), color.r)); // Uncomment if one wants to change base text too
 		m_popup_animator_text.GetComponent<Outline>().effectColor = color;

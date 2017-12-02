@@ -55,7 +55,7 @@ public class TestText : MonoBehaviour
             }
             if (iteration == 9)
             {
-				conversation.SetColor(TextManager.YELL_COLOR);
+				conversation.SetColor(TextManager.DAMAGE_COLOR);
                 conversation.SetText("asdasdasdasd asd asdasdasdasdas asddasdasdasdasdasdasd sdas asd");
             }
 
@@ -63,6 +63,7 @@ public class TestText : MonoBehaviour
             {
 				m_test_dmg = true;
                 conversation.DestroyText();
+                TextManager.CreateYellText("ARGH", this.transform);
             }
 
             if (iteration == 18)

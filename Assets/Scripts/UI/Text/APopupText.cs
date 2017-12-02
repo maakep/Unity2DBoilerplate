@@ -6,19 +6,20 @@ using UnityEngine.UI;
 public abstract class APopupText : MonoBehaviour
 {
 
-    protected Text m_text;
+
     public Animator m_popup_animator_text;
 
 
     void Start()
     {
-        m_text = m_popup_animator_text.GetComponent<Text>();
         ExtendedStart();
     }
 
     protected abstract void ExtendedStart();
 
-    public abstract void DestroyText();
+    public virtual void DestroyText(){
+		Destroy(this.gameObject);
+	}
 
     public void SetText(string text)
     {

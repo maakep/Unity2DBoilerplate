@@ -8,7 +8,7 @@ public class TextManager : MonoBehaviour
     public static Color32 DAMAGE_COLOR = new Color32(240, 0, 0, 255);
     public static Color32 HEAL_COLOR = new Color32(0, 240, 0, 255);
     public static Color32 CONV_COLOR = new Color32(0, 0, 0, 255);
-    public static Color32 YELL_COLOR = new Color32(100, 100, 100, 255);
+    public static Color32 YELL_COLOR = new Color32(255, 255, 255, 255);
 
 
     private static GameObject m_screen_canvas;
@@ -17,8 +17,6 @@ public class TextManager : MonoBehaviour
     private static APopupText m_damage_text;
     private static APopupText m_conversation_text;
     private static APopupText m_yell_text;
-    //private static IPopupText m_conversation_text;
-    //private list<> m_ongoing_conversation;
 
 
     /// <summary> 
@@ -53,7 +51,12 @@ public class TextManager : MonoBehaviour
         {
             Debug.LogError("Could not load conversation text prefab");
         }
-        //m_yell_text = Resources.Load<APopupText>("Prefabs/Text/YellTextParent");
+
+        m_yell_text = Resources.Load<APopupText>("Prefabs/Text/YellTextParent"); 
+        if (m_yell_text == null)
+        {
+            Debug.LogError("Could not load yell text prefab");
+        }
     }
 
     public static void CreateDamageText(string text, Transform location, float? range = null, Color32? color = null)
@@ -76,10 +79,10 @@ public class TextManager : MonoBehaviour
     }
 
 
-    public static APopupText CreateYellText(string text, Transform location, Color32? color = null) // TODO, should be fairly easy to implement. Same way as createDamageText but with a longer animation, and with attach_to_object=true
+    public static APopupText CreateYellText(string text, Transform location, Color32? color = null) // TODO: should be fairly easy to implement. Same way as createDamageText but with a longer animation, and with attach_to_object=true
     {
         Color32 text_color = color ?? YELL_COLOR;
-        return CreatePopupText(text, location, m_yell_text, text_color); // Yell is not implemented yet, but won't take more than an hour to implement.
+        return CreatePopupText(text, location, m_yell_text, text_color, attach_to_object: true);
     }
 
     private static APopupText CreatePopupText(string text, Transform transform, APopupText popuptext, Color32 color, bool attach_to_object = false, float pad_x = 0, float pad_y = 0)
