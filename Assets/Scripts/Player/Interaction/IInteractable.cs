@@ -1,3 +1,3 @@
 public interface IInteractable {
-  void Interact();
+  void Interact(UnityEngine.GameObject sender);
 }

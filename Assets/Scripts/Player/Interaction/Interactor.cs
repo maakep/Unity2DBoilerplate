@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Interactor : MonoBehaviour {
   public float interactRangeRadius;
+  public bool multipleInteractionsPerClick = false;
   private int _layerMask;
 
   void Awake() {
@@ -14,8 +15,12 @@ public class Interactor : MonoBehaviour {
     if (Input.GetButtonDown(KeyMappings.Interact)) {
       foreach (var col in Physics2D.OverlapCircleAll(transform.position, interactRangeRadius, _layerMask)) {
         var interactables = col.GetComponents<IInteractable>();
-        foreach (var interactable in interactables)
-          interactable.Interact();
+        foreach (var interactable in interactables) {
+          interactable.Interact(gameObject);
+          if (!multipleInteractionsPerClick && interactables != null) {
+            return;
+          }
+        }        
       }
     }
   }
