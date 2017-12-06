@@ -20,7 +20,7 @@ public class ActivableObjectTrigger : MonoBehaviour, IInteractable {
 		_sr = GetComponent<SpriteRenderer>();
 	}
 
-	public void Interact() {
+	public void Interact(GameObject sender) {
 		if (_activableObject != null) {
 			_sr.color = (_activableObject.Activate()) ? Color.green : Color.red;
 		}

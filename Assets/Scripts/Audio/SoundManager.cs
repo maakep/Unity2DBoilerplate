@@ -15,6 +15,7 @@ public static class SoundManager
   static public AudioClip IncorrectClipName;
   static SoundManager() {
     _clips = Resources.LoadAll<AudioClip>("Audio");
+    IncorrectClipName = Resources.Load<AudioClip>("Audio/error");
   }
 
   private static AudioClip GetClip(string clip) {
@@ -26,14 +27,15 @@ public static class SoundManager
     return IncorrectClipName;
   }
 
-
-  public static void Play(MonoBehaviour anyScript, string clip, Vector3 position){anyScript.StartCoroutine(_Play(clip, position));}
-  private static IEnumerator _Play(string clip, Vector3 position)
+  public static Coroutine Play(MonoBehaviour anyScript, string clip, Vector3 position){return anyScript.StartCoroutine(_Play(clip, position, 1.0f));}
+  public static Coroutine Play(MonoBehaviour anyScript, string clip, Vector3 position, float volume){return anyScript.StartCoroutine(_Play(clip, position, volume));}
+  private static IEnumerator _Play(string clip, Vector3 position, float volume)
   {
     var newObj = new GameObject("Soundplayer_" + clip, typeof(AudioSource));
     newObj.transform.position = position;
     var aus = newObj.GetComponent<AudioSource>();
     var audio = GetClip(clip);
+    aus.volume = volume;
     aus.PlayOneShot(audio);
     yield return new WaitForSeconds(audio.length + 1);
     Object.Destroy(newObj);
@@ -42,16 +44,16 @@ public static class SoundManager
 ///<summary>
 /// Plays a sound based on a folder in Resources. They load once, and is then cached to be reused. 
 ///</summary>
-  public static void PlayRandom(MonoBehaviour anyScript, string folder, Vector3 position){anyScript.StartCoroutine(_PlayRandom(folder, position));}
-  private static IEnumerator _PlayRandom(string folder, Vector3 position)
+  public static Coroutine PlayRandom(MonoBehaviour anyScript, string folder, Vector3 position){return anyScript.StartCoroutine(_PlayRandom(folder, position, 1.0f));}
+  public static Coroutine PlayRandom(MonoBehaviour anyScript, string folder, Vector3 position, float volume){return anyScript.StartCoroutine(_PlayRandom(folder, position, volume));}
+  private static IEnumerator _PlayRandom(string folder, Vector3 position, float volume)
   {
     var sounds = TryGetFromRandomCache(folder);
     var newObj = new GameObject("SoundplayerRandom_" + folder, typeof(AudioSource));
     newObj.transform.position = position;
     var aus = newObj.GetComponent<AudioSource>();
-    aus.playOnAwake = false;
     AudioClip audio = sounds[Random.Range(0, sounds.Length)];
-    Debug.Log(audio.name);
+    aus.volume = volume;
     aus.PlayOneShot(audio);
     yield return new WaitForSeconds(audio.length + 1);
     Object.Destroy(newObj);
@@ -76,7 +78,6 @@ public static class SoundManager
 
     if (sounds == null) {
       sounds = Resources.LoadAll<AudioClip>("Audio/" + folder);
-      Debug.Log("Loading from resources: " + sounds.Count());
     }
 
     if (sounds.Length > 0) {

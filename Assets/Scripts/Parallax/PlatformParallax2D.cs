@@ -36,16 +36,21 @@ private void Update() {
 	float deltaY = cameraTransform.position.y - lastCameraY;
 	transform.position += Vector3.up * (deltaY * parallaxSpeedY);
 	lastCameraY = cameraTransform.position.y;
-	if (cameraTransform.position.x < (layers[leftIndex].transform.position.x + viewZone)){
+
+	if (cameraTransform.position.x < (layers[leftIndex].transform.position.x + viewZone)) {
 		ScrollLeft();
 	}
-	if (cameraTransform.position.x > (layers[rightIndex].transform.position.x - viewZone)){
+	if (cameraTransform.position.x > (layers[rightIndex].transform.position.x - viewZone)) {
 		ScrollRight();
 	}
 }
 
 	private void ScrollLeft() {
-		layers[rightIndex].position = Vector3.right * (layers[leftIndex].position.x - backgroundSize);
+		var newPos = Vector3.right * (layers[leftIndex].position.x - backgroundSize);
+		// Parallax offset
+		newPos.y += transform.position.y;
+		newPos.z = transform.position.z;
+		layers[rightIndex].position = newPos;
 		leftIndex = rightIndex;
 		rightIndex--;
 		if (rightIndex < 0)
@@ -53,7 +58,10 @@ private void Update() {
 	}
 
 	private void ScrollRight() {
-		layers[leftIndex].position = Vector3.right * (layers[rightIndex].position.x + backgroundSize);
+		var newPos = Vector3.right * (layers[rightIndex].position.x + backgroundSize);
+		newPos.y += transform.position.y;
+		newPos.z = transform.position.z;
+		layers[leftIndex].position = newPos;
 		rightIndex = leftIndex;
 		leftIndex++;
 		if (leftIndex == layers.Length)

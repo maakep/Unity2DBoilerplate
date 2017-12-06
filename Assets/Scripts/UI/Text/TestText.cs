@@ -7,7 +7,6 @@ public class TestText : MonoBehaviour
 
     float m_time;
     float m_time_2;
-    bool is_alive = false;
     APopupText conversation;
     int iteration = 0;
     bool m_test_dmg;
